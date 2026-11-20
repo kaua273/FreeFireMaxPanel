@@ -1,4 +1,3 @@
-
 package com.panel
 
 import android.app.Activity

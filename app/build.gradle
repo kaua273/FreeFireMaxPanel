@@ -1,17 +1,4 @@
-
 plugins {
-    id 'com.android.application' version '8.6.1'
-}
-
-android {
-    namespace 'com.panel'
-    compileSdk 35
-
-    defaultConfig {
-        applicationId 'com.panel.freefiremax'
-        minSdk 23
-        targetSdk 35
-        versionCode 1
-        versionName '1.0'
-    }
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
 }

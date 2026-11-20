@@ -3,62 +3,67 @@ package com.panel
 
 import android.app.Activity
 import android.os.Bundle
+import android.content.Intent
 import android.graphics.Color
+import android.graphics.Typeface
 import android.view.Gravity
 import android.widget.*
-import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 
 class MainActivity : Activity() {
 
-    private val red = Color.rgb(255, 35, 55)
+    private val red = Color.rgb(255, 35, 60)
+    private val dark = Color.rgb(12, 12, 18)
     private val white = Color.WHITE
-    private val dark = Color.rgb(15, 15, 20)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(22, 28, 22, 22)
-            setBackgroundColor(dark)
+            setPadding(22, 30, 22, 24)
+            background = GradientDrawable(
+                GradientDrawable.Orientation.TOP_BOTTOM,
+                intArrayOf(dark, Color.rgb(28, 10, 17))
+            )
         }
 
         val scroll = ScrollView(this)
         scroll.addView(root)
 
         val title = TextView(this).apply {
-            text = "FREE FIRE MAX"
-            textSize = 27f
-            setTextColor(red)
+            text = "FF MAX"
+            textSize = 34f
             gravity = Gravity.CENTER
+            setTextColor(red)
             setTypeface(null, Typeface.BOLD)
         }
         root.addView(title)
 
         val subtitle = TextView(this).apply {
-            text = "PANEL • DEMONSTRAÇÃO VISUAL"
+            text = "GAMING CONTROL PANEL"
             textSize = 12f
-            setTextColor(white)
             gravity = Gravity.CENTER
+            setTextColor(white)
         }
         root.addView(subtitle)
 
-        addSpace(root, 25)
+        space(root, 25)
 
-        addSwitch(root, "AIMBOT • DEMO")
-        addSwitch(root, "ESP • DEMO")
-        addSwitch(root, "NO RECOIL • DEMO")
+        addCard(root, "AIMBOT", "Demonstração visual")
+        addCard(root, "ESP", "Demonstração visual")
+        addCard(root, "NO RECOIL", "Demonstração visual")
 
-        addSpace(root, 20)
+        space(root, 20)
 
-        val fovTitle = TextView(this).apply {
+        val fovLabel = TextView(this).apply {
             text = "FOV: 90"
             textSize = 18f
             setTextColor(white)
         }
-        root.addView(fovTitle)
+        root.addView(fovLabel)
 
-        val fov = SeekBar(this).apply {
+        val seek = SeekBar(this).apply {
             max = 180
             progress = 90
             progressTintList =
@@ -67,73 +72,111 @@ class MainActivity : Activity() {
                 android.content.res.ColorStateList.valueOf(red)
         }
 
-        fov.setOnSeekBarChangeListener(
+        seek.setOnSeekBarChangeListener(
             object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(
-                    bar: SeekBar?,
-                    value: Int,
-                    fromUser: Boolean
+                    bar: SeekBar?, value: Int, user: Boolean
                 ) {
-                    fovTitle.text = "FOV: $value"
+                    fovLabel.text = "FOV: $value"
                 }
-
                 override fun onStartTrackingTouch(bar: SeekBar?) {}
                 override fun onStopTrackingTouch(bar: SeekBar?) {}
             }
         )
+        root.addView(seek)
 
-        root.addView(fov)
+        space(root, 25)
 
-        addSpace(root, 25)
-
-        val info = TextView(this).apply {
-            text = "STATUS: DEMONSTRAÇÃO ATIVA\n\nEste painel é independente e não modifica nem controla jogos."
-            textSize = 14f
-            setTextColor(red)
-            gravity = Gravity.CENTER
-            setPadding(12, 20, 12, 20)
+        val launch = Button(this).apply {
+            text = "ABRIR FREE FIRE MAX"
+            textSize = 16f
+            setTextColor(white)
+            setBackgroundColor(red)
+            setOnClickListener { abrirJogo() }
         }
+        root.addView(launch)
 
-        root.addView(info)
+        space(root, 20)
+
+        val status = TextView(this).apply {
+            text = "STATUS: PAINEL ATIVO\nDEMONSTRAÇÃO INDEPENDENTE"
+            gravity = Gravity.CENTER
+            textSize = 13f
+            setTextColor(red)
+        }
+        root.addView(status)
 
         setContentView(scroll)
     }
 
-    private fun addSwitch(root: LinearLayout, name: String) {
-        val control = Switch(this).apply {
+    private fun addCard(
+        root: LinearLayout,
+        name: String,
+        description: String
+    ) {
+        val card = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(16, 12, 16, 12)
+            background = GradientDrawable().apply {
+                setColor(Color.rgb(30, 25, 32))
+                cornerRadius = 18f
+                setStroke(2, red)
+            }
+        }
+
+        val label = TextView(this).apply {
             text = name
-            textSize = 16f
+            textSize = 17f
             setTextColor(white)
-            setPadding(5, 15, 5, 15)
+            setTypeface(null, Typeface.BOLD)
+        }
+
+        val detail = TextView(this).apply {
+            text = description
+            textSize = 12f
+            setTextColor(Color.LTGRAY)
+        }
+
+        val toggle = Switch(this).apply {
+            text = "Ativar demonstração"
+            setTextColor(white)
             buttonTintList =
                 android.content.res.ColorStateList.valueOf(red)
         }
 
-        root.addView(control)
+        card.addView(label)
+        card.addView(detail)
+        card.addView(toggle)
+
+        val params = LinearLayout.LayoutParams(
+            -1, -2
+        )
+        params.bottomMargin = 16
+        root.addView(card, params)
     }
 
-    private fun addSpace(root: LinearLayout, height: Int) {
-        val space = TextView(this)
+    private fun abrirJogo() {
+        val intent = packageManager
+            .getLaunchIntentForPackage("com.dts.freefiremax")
+
+        if (intent != null) {
+            startActivity(intent)
+        } else {
+            Toast.makeText(
+                this,
+                "Free Fire MAX não encontrado!",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    private fun space(root: LinearLayout, height: Int) {
         root.addView(
-            space,
+            TextView(this),
             LinearLayout.LayoutParams(
                 1,
                 (height * resources.displayMetrics.density).toInt()
             )
         )
-    }
-}
-private fun abrirFreeFire() {
-    val intent = packageManager
-        .getLaunchIntentForPackage("com.dts.freefiremax")
-
-    if (intent != null) {
-        startActivity(intent)
-    } else {
-        Toast.makeText(
-            this,
-            "Free Fire MAX não encontrado!",
-            Toast.LENGTH_LONG
-        ).show()
     }
 }

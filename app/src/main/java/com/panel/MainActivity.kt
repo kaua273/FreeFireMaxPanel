@@ -123,3 +123,17 @@ class MainActivity : Activity() {
         )
     }
 }
+private fun abrirFreeFire() {
+    val intent = packageManager
+        .getLaunchIntentForPackage("com.dts.freefiremax")
+
+    if (intent != null) {
+        startActivity(intent)
+    } else {
+        Toast.makeText(
+            this,
+            "Free Fire MAX não encontrado!",
+            Toast.LENGTH_LONG
+        ).show()
+    }
+}
